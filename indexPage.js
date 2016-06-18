@@ -48,16 +48,30 @@ module.exports = (function() {
 		return '<table border="1">' + result + '</table>';
 	};
 	
-	var getSearchForm = function () {
-		return '<form method="POST"><label>Enter customer name</label><input type="text" name="customer_name"/><input type="submit"/></form>';
+	var getSearchForm = function () {		
+		return '<form method="POST"><label>Select worker</label>' + getWorkersSelect(keysModule.getAllWorkers()) +
+		'<label>Enter customer name</label><input type="text" name="customer_name"/><input type="submit"/></form>';
+	};
+	
+	var getWorkersSelect = function (workers) {
+		var options = '';
+		for (var i = 0; i < workers.length; ++i) {
+			options += '<option value="' + workers[i].id + '">' + workers[i].name + '</option>';
+		}
+		return (options.length) ? '<select name="worker_id">' + options + '</select>' : '';
 	};
 	
 	var getViewData = function (params) {		
+		console.log(params);
 		if (!params) {
 			return keysModule.getAll();
 		} 
 		if (params.customer_name) {
 			return keysModule.searchByCustomer(params.customer_name);
+		} else if (params.worker_id) {
+			return keysModule.searchByWorker(params.worker_id);
+		} else {
+			return [];
 		}
 	}
 	

@@ -1,6 +1,10 @@
 var express = require('express');
 var bodyParser = require("body-parser");
 var indexPage = require('./indexPage.js');
+// var ObladiOblada = require('./indexPage.js');
+// ObladiOblada.getPage({
+//	customer_name: "cu"
+//});
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -10,7 +14,13 @@ app.get('/', function (req, res) {
   res.send(indexPage.getPage());
 });
 
+app.get('/hello', function (req, res) {
+  res.send("Hello");
+});
+
 app.post('/', function (req, res) {
+   console.log(req.body);
+  //  req.body = { customer_name: "cu" }
   res.send(indexPage.getPage(req.body));
 });
 

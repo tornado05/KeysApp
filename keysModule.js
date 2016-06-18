@@ -24,8 +24,8 @@ module.exports = (function () {
 			"id": 2,
 			"date": "2015-14-12 14:44:14",
 			"worker": {
-				"id": 1,
-				"name": "worker"
+				"id": 2,
+				"name": "worker 1"
 			},			
 			"key": {
 				"id": 1,
@@ -74,12 +74,42 @@ module.exports = (function () {
 		return result;
 	};
 	
+	var searchByWorker = function (id) {		
+		var result = [];
+		for (var i = 0; i < data.length; ++i) {
+			if (data[i].worker.id === parseInt(id)) {
+				result.push(data[i]);
+			}
+		}
+		return result;
+	};
+	
 	var searchByDate = function (date) {
 		var result = [];
 		for(var i = 0; i < data.length; ++i) {
 			if(Date.parse(data[i].date) === Date.parse(date)) {
 				result.push(data[i]);
 			}
+		}
+		return result;
+	};
+	
+	var getAllWorkers = function () {
+		var result = [];
+		var workers = [];
+		for (var i = 0; i < data.length; ++i) {
+			workers.push(data[i].worker);
+		}
+		for (var i = 0; i < workers.length; ++i) {
+			var unique = true;
+			for (var j = 0; j < result.length; ++j) {
+				if (workers[i].id === result[j].id) {
+					unique = false;
+				}
+			}
+			if (unique) {
+				result.push(workers[i]);
+			}			
 		}
 		return result;
 	};
@@ -91,7 +121,9 @@ module.exports = (function () {
 	return {
 		searchByCustomer: searchByCustomer,
 		searchByDate: searchByDate,
-		getAll: getAll
+		getAll: getAll,
+		getAllWorkers: getAllWorkers,
+		searchByWorker: searchByWorker
 	};
 })();
 
