@@ -1,66 +1,16 @@
-module.exports = (function () {
-	var data = [
-		{
-			"id": 1,
-			"date": "2015-10-12 14:44:14",
-			"worker": {
-				"id": 1,
-				"name": "worker"
-			},			
-			"key": {
-				"id": 1,
-				"apartment": {
-					"id": 1,
-					"number": 5
-				},
-				"customer": {
-					"id": 1,
-					"name": "customer"
-				},
-				"name": "my key"
-			}			
-		},
-		{
-			"id": 2,
-			"date": "2015-14-12 14:44:14",
-			"worker": {
-				"id": 2,
-				"name": "worker 1"
-			},			
-			"key": {
-				"id": 1,
-				"apartment": {
-					"id": 1,
-					"number": 5
-				},
-				"customer": {
-					"id": 1,
-					"name": "customer 1"
-				},
-				"name": "my key"
-			}			
-		},
-		{
-			"id": 3,
-			"date": "2015-14-12 14:44:14",
-			"worker": {
-				"id": 1,
-				"name": "worker"
-			},			
-			"key": {
-				"id": 1,
-				"apartment": {
-					"id": 1,
-					"number": 5
-				},
-				"customer": {
-					"id": 1,
-					"name": "Mary"
-				},
-				"name": "my key"
-			}			
-		}
-	];
+var fs = require('fs');
+var logger = require('./../services/Logger.js');
+
+module.exports = (function () {            
+        var getDataFromFile = function (path) {
+            try{
+                var result = fs.readFileSync(path, 'utf8');
+                return JSON.parse(result);
+            } catch(e) {
+                logger.logError("Can't read from file");
+                return [];
+            }            
+        };
 	
 	var searchByCustomer = function (customerName) {		
 		// All coll stuff find here
@@ -117,6 +67,8 @@ module.exports = (function () {
 	var getAll = function () {
 		return data;
 	};
+        
+        var data = getDataFromFile('./data/data.json');
 
 	return {
 		searchByCustomer: searchByCustomer,

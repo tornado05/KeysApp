@@ -1,4 +1,4 @@
-var keysModule = require('./keysModule.js');
+var keysModule = require('./../models/keysModule.js');
 
 module.exports = (function() {
 	
@@ -12,7 +12,10 @@ module.exports = (function() {
 	};
 	
 	var getPageHead = function () {
-		return '<head><title>No way</title></head>';
+		return '<head>' +
+		'<title>No way</title>' +
+		'<link rel="stylesheet" href="http://localhost:3000/style.css"/>' +
+		'</head>';
 	};
 	
 	var getPageHeader = function () {
