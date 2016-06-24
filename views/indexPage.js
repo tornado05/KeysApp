@@ -29,7 +29,8 @@ module.exports = (function() {
 	var getMain = function (params) {
 		return '<main><h1>Keys</h1>' +
 		getSearchForm() +
-		getAllKeysTable(params) +		
+		getAllKeysTable(params) +
+                getRecordForm() +
 		'</main>';
 	};
 	
@@ -52,9 +53,30 @@ module.exports = (function() {
 	};
 	
 	var getSearchForm = function () {		
-		return '<form method="POST"><label>Select worker</label>' + getWorkersSelect(keysModule.getAllWorkers()) +
-		'<label>Enter customer name</label><input type="text" name="customer_name"/><input type="submit"/></form>';
+		return '<form method="GET" action="search">' + 
+                       '<input type="hidden" name="action" value="search"/>' + 
+                       '<label>Select worker</label>' + 
+                       getWorkersSelect(keysModule.getAllWorkers()) +
+		       '<label>Enter customer name</label>' + 
+                       '<input type="text" name="customer_name"/>' + 
+                       '<input type="submit"/>' + 
+                       '</form>';
 	};
+        
+        var getRecordForm = function () {
+            return '<form method="POST" action="record">' +
+                   '<input type="hidden" name="action" value="add"/>' + 
+                   '<label>Enter customer name</label>' +                    
+                   '<input type="text" name="customer_name"/>' + 
+                   '<label>Enter worker name</label>' +                    
+                   '<input type="text" name="word_name"/>' + 
+                   '<label>Enter appartment number</label>' +                    
+                   '<input type="text" name="appartment_number"/>' + 
+                   '<label>Enter key name</label>' +                    
+                   '<input type="text" name="key_name"/>' + 
+                   '<input type="submit"/>' + 
+                   '</form>';
+        };
 	
 	var getWorkersSelect = function (workers) {
 		var options = '';
@@ -64,19 +86,22 @@ module.exports = (function() {
 		return (options.length) ? '<select name="worker_id">' + options + '</select>' : '';
 	};
 	
-	var getViewData = function (params) {		
-		console.log(params);
+	var getViewData = function (params) {
+            console.log(params);
 		if (!params) {
-			return keysModule.getAll();
+		    return keysModule.getAll();
 		} 
-		if (params.customer_name) {
+		if (params.customer_name && params.action === 'search') {
 			return keysModule.searchByCustomer(params.customer_name);
-		} else if (params.worker_id) {
+		} else if (params.worker_id && params.action === 'search') {
 			return keysModule.searchByWorker(params.worker_id);
-		} else {
-			return [];
+		} else if (params.customer_name && params.action === 'add') {
+                    keysModule.addRecord(params);
+                    return keysModule.getAll();
+                } else {
+                    return keysModule.getAll();
 		}
-	}
+	};
 	
 	return {
 		getPage: getPage

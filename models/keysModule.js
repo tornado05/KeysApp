@@ -2,6 +2,9 @@ var fs = require('fs');
 var logger = require('./../services/Logger.js');
 
 module.exports = (function () {            
+        
+        var dbFilePath = './data/data.json';
+    
         var getDataFromFile = function (path) {
             try{
                 var result = fs.readFileSync(path, 'utf8');
@@ -15,7 +18,7 @@ module.exports = (function () {
 	var searchByCustomer = function (customerName) {		
 		// All coll stuff find here
 		var result = [];
-		var expression = new RegExp("^" + customerName + "(.*)")
+		var expression = new RegExp("^" + customerName + "(.*)");
 		for(var i = 0; i < data.length; ++i) {
 			if(data[i].key.customer.name.search(expression) > -1) {
 				result.push(data[i]);
@@ -68,14 +71,62 @@ module.exports = (function () {
 		return data;
 	};
         
-        var data = getDataFromFile('./data/data.json');
+        var prepareRecord = function (params) {            
+            var result = {};
+            result.id = data.length + 1; 
+            result.date = new Date();
+            var customer = getCustomerByName(params.customer_name);
+            console.log(customer);
+            return result;
+        };
+        
+        var getCustomerByName = function (name) {
+            var result = null;
+            for(var i = 0; i < data.length; ++i) {
+                if (data[i].key.customer.name === name) {
+                    result = data[i].key.customer;
+                }
+            }
+            if (result) {
+                return result;
+            }
+            var maxCustomerId = 1;
+            for(var i = 0; i < data.length; ++i) {
+                if (data[i].key.customer.id > maxCustomerId) {
+                    maxCustomerId = data[i].key.customer.id;
+                }
+            }
+            result = {
+                id: ++maxCustomerId,
+                name: name
+            };
+          return result;
+        };
+        
+        var addRecord = function (record) {            
+            data.push(prepareRecord(record));            
+            try {
+                fs.writeFileSync(
+                    dbFilePath, 
+                    JSON.stringify(data), 
+                    { flag: 'w+' }
+                );   
+                data = getDataFromFile(dbFilePath);
+            } catch(e) {
+                logger.logError('Failed saving data to file, data: ' + 
+                        JSON.stringify(record));
+            }            
+        };
+        
+        var data = getDataFromFile(dbFilePath);
 
 	return {
 		searchByCustomer: searchByCustomer,
 		searchByDate: searchByDate,
 		getAll: getAll,
 		getAllWorkers: getAllWorkers,
-		searchByWorker: searchByWorker
+		searchByWorker: searchByWorker,
+                addRecord: addRecord
 	};
 })();
 

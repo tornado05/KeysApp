@@ -19,10 +19,14 @@ app.get('/hello', function (req, res) {
   res.send("Hello");
 });
 
-app.post('/', function (req, res) {
-   console.log(req.body);
+app.get('/search', function (req, res) {
+   console.log(req.query);
   //  req.body = { customer_name: "cu" }
-  res.send(indexPage.getPage(req.body));
+  res.send(indexPage.getPage(req.query));
+});
+
+app.post('/record', function (req, res) {
+    res.send(indexPage.getPage(req.body));
 });
 
 app.listen(/*port*/3000, /*callback*/function () {
