@@ -50,8 +50,8 @@ module.exports = (function () {
 	var getAllWorkers = function () {
 		var result = [];
 		var workers = [];
-		for (var i = 0; i < data.length; ++i) {
-			workers.push(data[i].worker);
+                for (var i = 0; i < data.length; ++i) {
+		    workers.push(data[i].worker);
 		}
 		for (var i = 0; i < workers.length; ++i) {
 			var unique = true;
@@ -72,12 +72,44 @@ module.exports = (function () {
 	};
         
         var prepareRecord = function (params) {            
-            var result = {};
+            var result = {};            
             result.id = data.length + 1; 
-            result.date = new Date();
+            result.date = getDate();
             var customer = getCustomerByName(params.customer_name);
-            console.log(customer);
+            var worker = getWorkerByName(params.worker_name);
+            var apartment = getApartmentByNumber(params.appartment_number);
+            var key = getKeyByParams(params.key_name, customer, apartment);
+            result.worker = worker;
+            result.key = key;
             return result;
+        };
+        
+        var validateParams = function (params) {
+            console.log("Validating params");
+            console.log(
+                    (params.customer_name && params.customer_name.match(/^(.*[a-zA-Z ])$/)) && 
+                    (params.appartment_number && params.appartment_number.match(/[0-9]/)) && 
+                    (params.worker_name && params.worker_name.match(/^(.*[a-zA-Z ])$/)) && 
+                    (params.key_name && params.key_name.match(/^(.*[a-zA-Z ])$/))
+                    );
+            return (
+                    (params.customer_name && params.customer_name.match(/^(.*[a-zA-Z ])$/)) && 
+                    (params.appartment_number && params.appartment_number.match(/[0-9]/)) && 
+                    (params.worker_name && params.worker_name.match(/^(.*[a-zA-Z ])$/)) && 
+                    (params.key_name && params.key_name.match(/^(.*[a-zA-Z ])$/))
+                );
+        };
+        
+        var getDate = function () {
+            var formattedDate = '';
+            var date = new Date();
+            formattedDate += date.getFullYear() + "-";
+            formattedDate += date.getMonth() + 1 + "-";
+            formattedDate += date.getDate() + " ";
+            formattedDate += date.getHours() + ":";
+            formattedDate += date.getMinutes() + ":";
+            formattedDate += date.getSeconds();
+            return formattedDate;
         };
         
         var getCustomerByName = function (name) {
@@ -103,7 +135,84 @@ module.exports = (function () {
           return result;
         };
         
+        var getWorkerByName = function (name) {
+            var result = null;
+            for(var i = 0; i < data.length; ++i) {
+                if (data[i].worker.name === name) {
+                    result = data[i].worker;
+                }
+            }
+            if (result) {
+                return result;
+            }
+            var maxWorkerId = 1;
+            for(var i = 0; i < data.length; ++i) {
+                if (data[i].worker.id > maxWorkerId) {
+                    maxWorkerId = data[i].worker.id;
+                }
+            }
+            result = {
+                id: ++maxWorkerId,
+                name: name
+            };
+          return result;
+        };
+        
+        var getApartmentByNumber = function (number) {
+            var result = null;
+            for(var i = 0; i < data.length; ++i) {
+                if (data[i].key.apartment.number === parseInt(number)) {
+                    result = data[i].key.apartment;
+                }
+            }
+            if (result) {
+                return result;
+            }
+            var maxApartmentId = 1;
+            for(var i = 0; i < data.length; ++i) {
+                if (data[i].key.apartment.id > maxApartmentId) {
+                    maxApartmentId = data[i].key.apartment.id;
+                }
+            }
+            result = {
+                id: ++maxApartmentId,
+                number: number
+            };
+          return result;
+        };
+        
+        var getKeyByParams = function (name, customer, appartment) {
+            var result = null;
+            for(var i = 0; i < data.length; ++i) {
+                if (data[i].key.name === name && 
+                    data[i].key.customer.id === customer.id &&
+                    data[i].key.apartment.id === appartment.id) {
+                    result = data[i].key;
+                }
+            }
+            if (result) {
+                return result;
+            }
+            var maxKeyId = 1;
+            for(var i = 0; i < data.length; ++i) {
+                if (data[i].key.id > maxKeyId) {
+                    maxKeyId = data[i].key.id;
+                }
+            }
+            result = {
+                id: ++maxKeyId,
+                name: name,
+                customer: customer,
+                apartment: appartment
+            };
+          return result;
+        };
+        
         var addRecord = function (record) {            
+            if (!validateParams(record)) {
+                logger.logError("Wrong params: " + JSON.stringify(record));
+                return null;
+            }
             data.push(prepareRecord(record));            
             try {
                 fs.writeFileSync(
@@ -115,7 +224,9 @@ module.exports = (function () {
             } catch(e) {
                 logger.logError('Failed saving data to file, data: ' + 
                         JSON.stringify(record));
-            }            
+                return false;
+            }
+            return true;
         };
         
         var data = getDataFromFile(dbFilePath);

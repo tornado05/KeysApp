@@ -10,3 +10,9 @@ label{
 input[type="submit"]{
     display: block;
 }
+
+#message{
+    background: rgba(255, 255, 255, 0.7);
+    padding: 20px 40px;
+    text-align: center;
+}

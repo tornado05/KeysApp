@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require("body-parser");
 var indexPage = require('./views/indexPage.js');
+var keysModule = require('./models/keysModule.js');
 // var ObladiOblada = require('./indexPage.js');
 // ObladiOblada.getPage({
 //	customer_name: "cu"
@@ -12,7 +13,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 app.get('/', function (req, res) {
-  res.send(indexPage.getPage());
+    res.send(indexPage.getPage(req.query));
 });
 
 app.get('/hello', function (req, res) {
@@ -20,13 +21,17 @@ app.get('/hello', function (req, res) {
 });
 
 app.get('/search', function (req, res) {
-   console.log(req.query);
   //  req.body = { customer_name: "cu" }
   res.send(indexPage.getPage(req.query));
 });
 
 app.post('/record', function (req, res) {
-    res.send(indexPage.getPage(req.body));
+    var isOk = keysModule.addRecord(req.body);
+    if (isOk)  {
+        res.redirect('/');
+    } else {
+        res.redirect('/?message=Post data failed');
+    }    
 });
 
 app.listen(/*port*/3000, /*callback*/function () {

@@ -28,11 +28,20 @@ module.exports = (function() {
 	
 	var getMain = function (params) {
 		return '<main><h1>Keys</h1>' +
+                getMessage(params) +         
 		getSearchForm() +
 		getAllKeysTable(params) +
                 getRecordForm() +
 		'</main>';
 	};
+        
+        var getMessage = function (params) {
+            if (!params) {
+                return '';
+            } 
+            return (params.message) ? '<div id="message">' + 
+                    params.message + '</div>' : '';
+        };
 	
 	var getAllKeysTable = function (params) {
 		var data = getViewData(params);
@@ -69,7 +78,7 @@ module.exports = (function() {
                    '<label>Enter customer name</label>' +                    
                    '<input type="text" name="customer_name"/>' + 
                    '<label>Enter worker name</label>' +                    
-                   '<input type="text" name="word_name"/>' + 
+                   '<input type="text" name="worker_name"/>' + 
                    '<label>Enter appartment number</label>' +                    
                    '<input type="text" name="appartment_number"/>' + 
                    '<label>Enter key name</label>' +                    
@@ -87,20 +96,19 @@ module.exports = (function() {
 	};
 	
 	var getViewData = function (params) {
-            console.log(params);
-		if (!params) {
-		    return keysModule.getAll();
-		} 
-		if (params.customer_name && params.action === 'search') {
-			return keysModule.searchByCustomer(params.customer_name);
-		} else if (params.worker_id && params.action === 'search') {
-			return keysModule.searchByWorker(params.worker_id);
-		} else if (params.customer_name && params.action === 'add') {
-                    keysModule.addRecord(params);
-                    return keysModule.getAll();
-                } else {
-                    return keysModule.getAll();
-		}
+            if (!params) {
+                return keysModule.getAll();
+            } 
+            if (params.customer_name && params.action === 'search') {
+                    return keysModule.searchByCustomer(params.customer_name);
+            } else if (params.worker_id && params.action === 'search') {
+                    return keysModule.searchByWorker(params.worker_id);
+            } else if (params.customer_name && params.action === 'add') {
+                keysModule.addRecord(params);
+                return keysModule.getAll();
+            } else {
+                return keysModule.getAll();
+            }
 	};
 	
 	return {
