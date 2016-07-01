@@ -8,8 +8,16 @@ module.exports = (function() {
 		getPageHeader() + 
 		getMain(params) +
 		getPageFooter() +
+                getLibs() +
+                getChartScript() +
 		'</body></html>';
 	};
+        
+        var getLibs = function () {
+            return [
+                '<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js"></script>'
+            ].join('');
+        };
 	
 	var getPageHead = function () {
 		return '<head>' +
@@ -31,9 +39,69 @@ module.exports = (function() {
                 getMessage(params) +         
 		getSearchForm() +
 		getAllKeysTable(params) +
-                getRecordForm() +
+                getCharts() +
+                getRecordForm() +                
 		'</main>';
 	};
+        
+        var getCharts = function () {
+            return [
+                '<canvas id="appartment-chart" width="400" height="400"></canvas>'                
+            ].join('');
+        };
+        
+        var getChartScript = function () {
+            return [
+                '<script>',
+                'var ctx = document.getElementById("appartment-chart");',
+                'var myChart = new Chart(ctx, JSON.parse(\'' + JSON.stringify(getChartData()) + '\'));',
+                '</script>'
+            ].join('');
+        };
+        
+        // TODO: real data parsing should be here, this is only a mock
+        var getChartData = function () {
+            var appartments = keysModule.getAppartmentList();
+            var appartmentsStat = keysModule.getAppartmentsStat()
+            var labels = [];
+            var dataStat = [];
+            var backGroundColors = [];
+            for (var i = 0; i < appartments.length; ++i) {
+                labels.push(appartments[i].number);
+                dataStat.push(appartmentsStat[appartments[i].number]); 
+                backGroundColors.push('rgba(0, 255, 0, 0.8)');
+            }
+            return {
+              type: "bar",
+              data: {
+                  labels: labels,
+                  datasets: [
+                      {
+                          label: "Datasheet 1",
+                          data: dataStat,
+                          backgroundColor: backGroundColors
+                      }
+                  ]
+              },
+              options: {
+                  responsive: false,
+                  scales: {
+                      yAxes: [
+                          {
+                              ticks: {
+                                  beginAtZero: true
+                              }
+                          }
+                      ],
+                      xAxes: [
+                          {
+                              display: false
+                          }
+                      ]
+                  }
+              }
+            };                       
+        };
         
         var getMessage = function (params) {
             if (!params) {

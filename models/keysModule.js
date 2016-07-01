@@ -230,6 +230,37 @@ module.exports = (function () {
         };
         
         var data = getDataFromFile(dbFilePath);
+        
+        var getAppartmentList = function () {
+            var result = [];
+            var appartments = [];
+            for (var i = 0; i < data.length; ++i) {
+                appartments.push(data[i].key.apartment);
+            }
+            for (var i = 0; i < appartments.length; ++i) {
+                    var unique = true;
+                    for (var j = 0; j < result.length; ++j) {
+                            if (appartments[i].id === result[j].id) {
+                                    unique = false;
+                            }
+                    }
+                    if (unique) {
+                            result.push(appartments[i]);
+                    }			
+            }
+            return result;
+        };
+        
+        var getAppartmentsStat = function () {
+            var result = {};
+            for (var i = 0; i < data.length; ++i) {
+                if (!result[data[i].key.apartment.number]) {
+                    result[data[i].key.apartment.number] = 0;
+                }
+                ++result[data[i].key.apartment.number];
+            }
+            return result;
+        };
 
 	return {
 		searchByCustomer: searchByCustomer,
@@ -237,7 +268,9 @@ module.exports = (function () {
 		getAll: getAll,
 		getAllWorkers: getAllWorkers,
 		searchByWorker: searchByWorker,
-                addRecord: addRecord
+                addRecord: addRecord,
+                getAppartmentList: getAppartmentList,
+                getAppartmentsStat: getAppartmentsStat
 	};
 })();
 
