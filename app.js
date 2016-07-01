@@ -26,12 +26,7 @@ app.get('/search', function (req, res) {
 });
 
 app.post('/record', function (req, res) {
-    var isOk = keysModule.addRecord(req.body);
-    if (isOk)  {
-        res.redirect('/');
-    } else {
-        res.redirect('/?message=Post data failed');
-    }    
+    keysModule.addRecord(req.body, res); 
 });
 
 app.listen(/*port*/3000, /*callback*/function () {

@@ -6,13 +6,16 @@ module.exports = (function () {
         var dbFilePath = './data/data.json';
     
         var getDataFromFile = function (path) {
-            try{
-                var result = fs.readFileSync(path, 'utf8');
-                return JSON.parse(result);
-            } catch(e) {
-                logger.logError("Can't read from file");
-                return [];
-            }            
+                fs.readFile(
+                    path, 
+                    'utf8', 
+                    function (err, result) {
+                    if(err) {
+                        logger.logError("Can't read from file");
+                        data = [];
+                    } 
+                    data = JSON.parse(result);
+                });      
         };
 	
 	var searchByCustomer = function (customerName) {		
@@ -208,28 +211,30 @@ module.exports = (function () {
           return result;
         };
         
-        var addRecord = function (record) {            
+        var addRecord = function (record, res) {            
             if (!validateParams(record)) {
                 logger.logError("Wrong params: " + JSON.stringify(record));
                 return null;
             }
             data.push(prepareRecord(record));            
-            try {
-                fs.writeFileSync(
-                    dbFilePath, 
-                    JSON.stringify(data), 
-                    { flag: 'w+' }
-                );   
-                data = getDataFromFile(dbFilePath);
-            } catch(e) {
-                logger.logError('Failed saving data to file, data: ' + 
+            fs.writeFile(
+                dbFilePath, 
+                JSON.stringify(data), 
+                { flag: 'w+' },
+                function (err) {
+                    if (err) {
+                        logger.logError('Failed saving data to file, data: ' + 
                         JSON.stringify(record));
-                return false;
-            }
-            return true;
+                        res.redirect('/?message=Post data failed');
+                    }                    
+                    getDataFromFile(dbFilePath);
+                    res.redirect('/');
+                }
+            ); 
         };
         
-        var data = getDataFromFile(dbFilePath);
+        var data = null;
+        getDataFromFile(dbFilePath);
         
         var getAppartmentList = function () {
             var result = [];
