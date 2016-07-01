@@ -7,15 +7,23 @@ module.exports = (function() {
 		'<body>' + 
 		getPageHeader() + 
 		getMain(params) +
-		getPageFooter() +
+                getAjaxDemo() +
+		getPageFooter() +                
                 getLibs() +
                 getChartScript() +
 		'</body></html>';
 	};
         
+        var getAjaxDemo = function () {
+           return '<button id="ajax-demo">Ajax Demo</button>' + 
+                   '<div id="ajax-result-demo"></div>';
+        };
+        
         var getLibs = function () {
             return [
-                '<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js"></script>'
+                '<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js"></script>',
+                '<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>',
+                '<script type="text/javascript" src="ajax_demo.js"></script>'
             ].join('');
         };
 	
