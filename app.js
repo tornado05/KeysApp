@@ -2,57 +2,29 @@ var express = require('express');
 var bodyParser = require("body-parser");
 var indexPage = require('./views/indexPage.js');
 var keysModule = require('./models/keysModule.js');
-// var ObladiOblada = require('./indexPage.js');
-// ObladiOblada.getPage({
-//	customer_name: "cu"
-//});
+var appView = require('./views/appView.js');
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-app.get('/', function (req, res) {
-    res.send(indexPage.getPage(req.query));
-});
-
-app.get('/hello', function (req, res) {
-  res.send("Hello");
+app.get('/workers', function (req, res) {
+    res.send(keysModule.getAllWorkers());
 });
 
 app.get('/search', function (req, res) {
-  //  req.body = { customer_name: "cu" }
-  res.send(indexPage.getPage(req.query));
+  res.send(appView.searchRecord(req.query));
+});
+
+app.get('/chart', function (req, res) {
+  res.send(appView.getChartData());
 });
 
 app.post('/record', function (req, res) {
-    var isOk = keysModule.addRecord(req.body);
-    if (isOk)  {
-        res.redirect('/');
-    } else {
-        res.redirect('/?message=Post data failed');
-    }    
+    res.send(appView.addRecord(req.body)) ;
 });
 
-app.listen(/*port*/3000, /*callback*/function () {
+app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
-
-/*
- var express = function () {
-	 return {
-		 
-	 };
- }
-	HTTP 1.0
-	GET
-	POST
-	
-	callback
-	function a(b) {
-		/----
-		---
-		
-		b();
-	}
-*/
