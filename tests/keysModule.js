@@ -1,4 +1,4 @@
-var keysModule = require('./../models/keysModule.js');
+var keysModule = require('./../dist/models/keysModule.js');
 
 module.exports = (function () {
     var test1 = function () {
