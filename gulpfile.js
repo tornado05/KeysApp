@@ -2,6 +2,21 @@ var gulp = require('gulp');
 var fs = require('fs');
 var less = require('gulp-less');
 var clean = require('gulp-clean');
+var fileinclude = require('gulp-file-include');
+var uglify = require('gulp-uglify');
+var uglifycss = require('gulp-uglifycss');
+var connect = require('gulp-connect');
+
+gulp.task('server', function () {
+    connect.server({
+        root: 'www',
+        port: 8085
+    });
+});
+
+gulp.task('watch', function () {
+    gulp.watch('./src/**', ['build']);
+});
 
 gulp.task('clean', function () {
     return gulp.src('dist/*', {read: false}).pipe(clean());
@@ -24,6 +39,10 @@ gulp.task('compile_html', function () {
     return gulp.src([
         './src/public/html/index.html'
     ])
+    .pipe(fileinclude({
+      prefix: '@@',
+      basepath: '@file'
+    }))
     .pipe(gulp.dest('dist/public'));
 });
 
@@ -31,6 +50,7 @@ gulp.task('compile_js', function () {
     return gulp.src([
         './src/public/js/scripts.js'
     ])
+    .pipe(uglify())
     .pipe(gulp.dest('dist/public'));
 });
 
@@ -46,11 +66,15 @@ gulp.task('compile_less', function () {
         'src/public/less/style.less'
     ])
     .pipe(less())
+    .pipe(uglifycss({
+      "maxLineLen": 2048,
+      "uglyComments": true
+    }))
     .pipe(gulp.dest('dist/public'));
 });
 
 gulp.task('build', [
-    'clean',
+    //'clean',
     'compile_back_end',    
     'compile_less',
     'create_log_folder',

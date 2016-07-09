@@ -1,47 +1,42 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>No way</title>
-        <link rel="stylesheet" href="style.css"/>
-    </head>
+        @@include('./partial/head.html')
     <body>
-        <header></header>
+        @@include('./partial/header.html')
         <main>
-            <h1>Keys</h1>
-            <form method="GET" action="search">
-                <label>Select worker</label>
-                <select name="worker_id">
-                </select>
-                <label>Enter customer name</label>
-                <input type="text" name="customer_name"/>
-                <div>
-                    <div class="button" onclick="window.KeysApp.searchRecord()">Search</div>
-                </div>
-            </form>
-            <div id="search-output"></div>
-            <canvas id="appartment-chart" width="600" height="400"></canvas>
-            <form method="POST" action="record">
-                <div id="post-record-message"></div>
-                <label>Enter customer name</label>
-                <input type="text" name="customer_name"/>
-                <label>Enter worker name</label>
-                <input type="text" name="worker_name"/>
-                <label>Enter appartment number</label>
-                <input type="text" name="appartment_number"/>
-                <label>Enter key name</label>
-                <input type="text" name="key_name"/>
-                <div>
-                    <div class="button" onclick="window.KeysApp.addRecord()">Add record</div>
-                </div>
-            </form>
+            <section>
+                <h1>Keys</h1>
+                <hr />
+                <form method="GET" action="search">
+                    <label>Select worker</label>
+                    <select name="worker_id">
+                    </select>
+                    <label>Enter customer name</label>
+                    <input type="text" name="customer_name"/>
+                    <div>
+                        <div class="button" onclick="window.KeysApp.searchRecord()">Search</div>
+                    </div>
+                </form>
+                <div id="search-output"></div>
+                <canvas id="appartment-chart" width="600" height="400"></canvas>
+                <form method="POST" action="record">
+                    <div id="post-record-message"></div>
+                    <label>Enter customer name</label>
+                    <input type="text" name="customer_name"/>
+                    <label>Enter worker name</label>
+                    <input type="text" name="worker_name"/>
+                    <label>Enter appartment number</label>
+                    <input type="text" name="appartment_number"/>
+                    <label>Enter key name</label>
+                    <input type="text" name="key_name"/>
+                    <div>
+                        <div class="button" onclick="window.KeysApp.addRecord()">Add record</div>
+                    </div>
+                </form>
+            </section>
         </main>
-        <footer></footer>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+        @@include('./partial/footer.html')
+        @@include('./partial/javascript_includes.html')
         <script type="text/javascript" src="scripts.js"></script>
-        <script>
-            var ctx = document.getElementById("appartment-chart");
-            var myChart = new Chart(ctx, JSON.parse('{"type":"bar","data":{"labels":[5,"3","2"],"datasets":[{"label":"Datasheet 1","data":[12,1,1],"backgroundColor":["rgba(0, 255, 0, 0.8)","rgba(0, 255, 0, 0.8)","rgba(0, 255, 0, 0.8)"]}]},"options":{"responsive":false,"scales":{"yAxes":[{"ticks":{"beginAtZero":true}}],"xAxes":[{"display":false}]}}}'));
-        </script>
     </body>
 </html>
