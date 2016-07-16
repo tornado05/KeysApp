@@ -1,4 +1,5 @@
 var keysModule = require('./../models/keysModule.js');
+var userModule = require('./../models/userModule.js');
 
 module.exports = (function () {
     var searchRecord = function (params) {
@@ -56,10 +57,26 @@ module.exports = (function () {
               }
             };  
     };
+
+    var authenticate = function (params) {
+        var session = userModule.authenticate(params.login, params.pw);
+        delete session.user_id;
+        delete session.id;
+        return session;
+    };
+
+    var hello = function (params) {
+      if (userModule.authorize(params.token)) {
+        return 'hi';
+      }
+      return 'authorization failed';
+    }
     
     return {
         searchRecord: searchRecord,
         addRecord: addRecord,
-        getChartData: getChartData
+        getChartData: getChartData,
+        authenticate: authenticate,
+        hello: hello        
     };
 })();

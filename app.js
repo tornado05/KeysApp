@@ -24,6 +24,14 @@ app.post('/record', function (req, res) {
     res.send(appView.addRecord(req.body)) ;
 });
 
+app.post('/authenticate', function (req, res) {
+    res.send(appView.authenticate(req.body)) ;
+});
+
+app.get('/hello', function (req, res) {
+    res.send(appView.hello(req.query)) ;
+});
+
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });

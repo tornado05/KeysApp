@@ -3,17 +3,17 @@ var logger = require('./../services/Logger.js');
 
 module.exports = (function () {            
         
-        var dbFilePath = './data/data.json';
-    
-        var getDataFromFile = function (path) {
-            try{
-                var result = fs.readFileSync(path, 'utf8');
-                return JSON.parse(result);
-            } catch(e) {
-                logger.logError("Can't read from file");
-                return [];
-            }            
-        };
+    var dbFilePath = './data/data.json';
+
+    var getDataFromFile = function (path) {
+        try{
+            var result = fs.readFileSync(path, 'utf8');
+            return JSON.parse(result);
+        } catch(e) {
+            logger.logError("Can't read from file");
+            return [];
+        }            
+    };
 	
 	var searchByCustomer = function (customerName) {		
 		// All coll stuff find here
