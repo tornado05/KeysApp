@@ -3,13 +3,24 @@ var keysModule = require('./../models/keysModule.js');
 module.exports = (function () {
     var searchRecord = function (params) {
         // TODO: add serach by both params in a time
+        var data = [];
         if (params.customer_name) {
-            return keysModule.searchByCustomer(params.customer_name);
+            data = keysModule.searchByCustomer(params.customer_name);
         } else if (params.worker_id) {
-            return keysModule.searchByWorker(params.worker_id);
+            data = keysModule.searchByWorker(params.worker_id);
         } else {
-            return [];
+            data = [];
         }
+        if (params.limit && parseInt(params.offset) > -1) {
+          var result = [];
+          for (var i = params.offset; i < (parseInt(params.offset) + parseInt(params.limit)); ++i) {
+            if (data[i]) {
+              result.push(data[i]);
+            }            
+          }
+          data = result;
+        }
+        return data;
     };
     
     var addRecord = function (record) {

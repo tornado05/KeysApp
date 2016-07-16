@@ -1,5 +1,13 @@
 $(function () {
     window.KeysApp = (function () {
+
+        var searchParams = {
+            customer_name: null,
+            worker_id: null,
+            limit: 5,
+            offset: 0
+        };
+
         var initialize = function () {
            $.ajax('/workers').done(setWorkerSearchOptions);
            $.ajax('/chart').done(addChart);
@@ -19,28 +27,28 @@ $(function () {
             $('select[name="worker_id"]').html(options);
         };
         
-        var searchRecord = function () {            
+        var searchRecord = function () {
             var cutomerName = $('input[name="customer_name"]').val();
             var workerId = $('select[name="worker_id"]').val();
-            var searchParams = {
-                customer_name: cutomerName,
-                worker_id: workerId
-            };
+            searchParams.customer_name = cutomerName;
+            searchParams.worker_id = workerId;
+            searchParams.offset = 0;
             $.ajax('/search', { data: searchParams }).done(setSearchOutput);
         };
         
-        var setSearchOutput = function (data) {
-            if (!data || data.length === 0) {
-                $('#search-output').html('<div>Nothing found</div>');
-                return;
-            }
-            var content = '<tr>' +
-                    '<td>Date</td>' +
-                    '<td>Id key</td>' +
-                    '<td>Worker Name</td>' +
-                    '<td>Customer Name</td>' +
-                    '<td>Appartment Number</td>' +
-            '</tr>';
+        var setSearchOutput = function (data) {            
+            if (!searchParams.offset) {
+                if (!data || data.length === 0) {
+                    $('#search-output').html('<div>Nothing found</div>');
+                    return;
+                }
+            } else {
+                if (!data || data.length === 0) {
+                    $('#load-more-button').hide();
+                    return;
+                }
+            }               
+            var content = getHeader(searchParams.offset);
             for (var i = 0; i < data.length; ++i) {
                 content += '<tr>' +
                     "<td>" + data[i].date + "</td>" +
@@ -50,8 +58,32 @@ $(function () {
                     "<td>" + data[i].key.apartment.number + "</td>" +
             '</tr>';
             }
-            $('#search-output').html('<table border="1">' + content + '</table>');
+            var loadMore = (data.length % searchParams.limit === 0) ? '<div class="button" id="load-more-button" onclick="window.KeysApp.loadMore()">Load more</div>': '';
+            var searchOutputTable = [
+                '<table border="1">', 
+                content, 
+                '</table>',
+                loadMore
+            ].join('');
+            $('#search-output').html(searchOutputTable);
         };
+
+        var getHeader = function (hasPreviousResult) {
+            var content = '';
+            if (hasPreviousResult) {
+                content = $('#search-output>table').html();
+
+            } else {
+                content = '<tr>' +
+                    '<td>Date</td>' +
+                    '<td>Id key</td>' +
+                    '<td>Worker Name</td>' +
+                    '<td>Customer Name</td>' +
+                    '<td>Appartment Number</td>' +
+                    '</tr>';
+            }
+            return  content;
+        }
         
         var addRecord = function () {
             var customerName = $('form[action="record"] > input[name="customer_name"]').val();
@@ -74,12 +106,18 @@ $(function () {
             var message = (data.success) ? 'Record added' : 'Failed to add record';
             $('#post-record-message').text(message);
         };
+
+        var loadMore = function () {
+            searchParams.offset += searchParams.limit;
+            $.ajax('/search', { data: searchParams }).done(setSearchOutput);
+        }
         
         initialize();
         
         return {
             searchRecord: searchRecord,
-            addRecord: addRecord
+            addRecord: addRecord,
+            loadMore: loadMore
         };
     })();
 });

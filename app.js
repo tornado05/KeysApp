@@ -1,6 +1,5 @@
 var express = require('express');
 var bodyParser = require("body-parser");
-var indexPage = require('./views/indexPage.js');
 var keysModule = require('./models/keysModule.js');
 var appView = require('./views/appView.js');
 var app = express();
