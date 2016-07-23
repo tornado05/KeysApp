@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require("body-parser");
 var keysModule = require('./models/keysModule.js');
+var userModule = require('./models/userModule.js');
 var appView = require('./views/appView.js');
 var app = express();
 
@@ -29,7 +30,9 @@ app.post('/authenticate', function (req, res) {
 });
 
 app.get('/hello', function (req, res) {
-    res.send(appView.hello(req.query)) ;
+	userModule.authorize(req, res, function () {
+		return appView.hello(req.query);
+	})
 });
 
 app.listen(3000, function () {

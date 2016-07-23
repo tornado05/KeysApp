@@ -66,10 +66,7 @@ module.exports = (function () {
     };
 
     var hello = function (params) {
-      if (userModule.authorize(params.token)) {
-        return 'hi';
-      }
-      return 'authorization failed';
+      return 'hi';
     }
     
     return {

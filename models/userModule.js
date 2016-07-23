@@ -62,15 +62,31 @@ module.exports = (function () {
     	return token;
     };
 
-    var authorize = function (token) {
+    var hasSession = function (token, executable) {
     	var session = null;
     	for (var i = 0; i < sessions.length; ++i) {
     		if (sessions[i].token === token) {    			
     			session = sessions[i];
     		}
     	}
-    	return !!session;
+        if (session) {
+            executable();
+        } else {
+            throw { status: 401 };
+        }
     }
+
+    var authorize = function (req, res, executable) {
+    try {
+        hasSession(req.headers.token, function () {
+            res.send(executable());
+        });   
+    } catch (error) {
+        logger.logError("Coudn't authorize user with token: " + req.headers.token);
+        res.statusCode = error.status;
+        res.send();
+    }   
+}
 
 	initialize();
 
@@ -79,3 +95,5 @@ module.exports = (function () {
 		authorize: authorize
 	};
 })();
+
+//Гагарін, привіт)
