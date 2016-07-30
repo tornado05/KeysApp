@@ -1,5 +1,6 @@
 var fs = require('fs');
 var logger = require('./../services/Logger.js');
+var Record = require('./Record.js');
 
 module.exports = (function () {            
         
@@ -8,7 +9,13 @@ module.exports = (function () {
     var getDataFromFile = function (path) {
         try{
             var result = fs.readFileSync(path, 'utf8');
-            return JSON.parse(result);
+            var records = JSON.parse(result)
+            var res = [];
+            for (var i = 0; i < records.length; ++i) {
+                res.push(new Record(records[i]));
+            } 
+            return res;           
+            //return JSON.parse(result);
         } catch(e) {
             logger.logError("Can't read from file");
             return [];
@@ -20,8 +27,10 @@ module.exports = (function () {
 		var result = [];
 		var expression = new RegExp("^" + customerName + "(.*)");
 		for(var i = 0; i < data.length; ++i) {
-			if(data[i].key.customer.name.search(expression) > -1) {
-				result.push(data[i]);
+            var customer = data[i].getCustomer();
+			console.log(customer.getName());
+            if(customer.getName().search(expression) > -1) {
+				result.push(data[i].serialize());
 			}
 		}
 		return result;
@@ -50,13 +59,13 @@ module.exports = (function () {
 	var getAllWorkers = function () {
 		var result = [];
 		var workers = [];
-                for (var i = 0; i < data.length; ++i) {
-		    workers.push(data[i].worker);
+        for (var i = 0; i < data.length; ++i) {
+		    workers.push(data[i].getWorker());
 		}
 		for (var i = 0; i < workers.length; ++i) {
 			var unique = true;
 			for (var j = 0; j < result.length; ++j) {
-				if (workers[i].id === result[j].id) {
+				if (result[j] && workers[i].getId() === result[j].getId()) {
 					unique = false;
 				}
 			}
@@ -64,8 +73,17 @@ module.exports = (function () {
 				result.push(workers[i]);
 			}			
 		}
-		return result;
+        
+		return serializeOutput(result);
 	};
+
+    // TODO: this shoul be in view
+    var serializeOutput = function (result) {
+        for (var i = 0; i < result.length; ++i) {
+            result[i] = result[i].serialize();
+        }
+        return result
+    };
 	
 	var getAll = function () {
 		return data;
@@ -268,9 +286,9 @@ module.exports = (function () {
 		getAll: getAll,
 		getAllWorkers: getAllWorkers,
 		searchByWorker: searchByWorker,
-                addRecord: addRecord,
-                getAppartmentList: getAppartmentList,
-                getAppartmentsStat: getAppartmentsStat
+        addRecord: addRecord,
+        getAppartmentList: getAppartmentList,
+        getAppartmentsStat: getAppartmentsStat
 	};
 })();
 

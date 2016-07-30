@@ -1,5 +1,6 @@
 var fs = require('fs');
 var logger = require('./../services/Logger.js');
+var User = require('./User.js');
 
 module.exports = (function () {
 
@@ -8,7 +9,11 @@ module.exports = (function () {
 	var sessions = [];
 
 	var initialize = function () {
-		data = getDataFromFile(dbFilePath);
+        var users = getDataFromFile(dbFilePath);
+        for (var i = 0; i < users.length; ++i) {
+            data.push(new User(users[i]));
+        }
+		//data = getDataFromFile(dbFilePath);
 	};
 
 	var getDataFromFile = function (path) {
@@ -24,7 +29,7 @@ module.exports = (function () {
     var authenticate = function (login, pw) {
     	var users = [];
     	for (var i = 0; i < data.length; ++i) {
-    		if (data[i].login === login && data[i].pw === pw) {
+    		if (data[i].isCurrentUser(login, pw)) {
     			users.push(data[i]);
     		}
     	}
@@ -45,8 +50,8 @@ module.exports = (function () {
     	var sessionId = sessions.length + 1;
     	var session = {
     		id: sessionId,
-    		user_id: user.id,
-    		user_name: user.name,
+    		user_id: user.getId(),
+    		user_name: user.getFullName(),
     		token: generateToken()
     	};
     	sessions.push(session);

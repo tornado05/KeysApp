@@ -1,7 +1,8 @@
 [
 	{
 		"id": 1,
-		"name": "Main User",
+		"first_name": "Main",
+		"last_name": "User",
 		"login": "root",
 		"pw": "1"		
 	}
