@@ -6,6 +6,8 @@ var fileinclude = require('gulp-file-include');
 var uglify = require('gulp-uglify');
 var uglifycss = require('gulp-uglifycss');
 var connect = require('gulp-connect');
+var compile = require('gulp-ejs-template');
+var concat = require('gulp-concat');
 
 gulp.task('server', function () {
     connect.server({
@@ -48,9 +50,10 @@ gulp.task('compile_html', function () {
 
 gulp.task('compile_js', function () {
     return gulp.src([
-        './src/public/js/*.js'
+        './src/public/js/**/*.js'
     ])
-    .pipe(uglify())
+    .pipe(concat('scripts.js'))
+    //.pipe(uglify())
     .pipe(gulp.dest('dist/public'));
 });
 
@@ -80,6 +83,14 @@ gulp.task('deploy_data', function () {
     .pipe(gulp.dest('dist/data'));
 });
 
+gulp.task('compile-templates', function () {
+    gulp.src([
+            'src/public/templates/*.ejs'
+        ])
+        .pipe(compile({ moduleName: 'templates' }))
+        .pipe(gulp.dest('dist/public'));
+});
+
 gulp.task('build', [
     //'clean',
     'compile_back_end',    
@@ -87,7 +98,8 @@ gulp.task('build', [
     'deploy_data',
     'create_log_folder',
     'compile_js',  
-    'compile_html'
+    'compile_html',
+    'compile-templates'
 ]);
 
 gulp.task('default', ['build']);

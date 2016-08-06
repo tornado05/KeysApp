@@ -4,7 +4,12 @@ module.exports = function (obj) {
 		return obj.name;
 	};
 
+	var getId = function () {
+		return obj.id;
+	};
+
 	return {
-		getName: getName
+		getName: getName,
+		getId: getId
 	};
 };

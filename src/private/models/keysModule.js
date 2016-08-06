@@ -13,7 +13,7 @@ module.exports = (function () {
             var res = [];
             for (var i = 0; i < records.length; ++i) {
                 res.push(new Record(records[i]));
-            } 
+            }             
             return res;           
             //return JSON.parse(result);
         } catch(e) {
@@ -28,7 +28,6 @@ module.exports = (function () {
 		var expression = new RegExp("^" + customerName + "(.*)");
 		for(var i = 0; i < data.length; ++i) {
             var customer = data[i].getCustomer();
-			console.log(customer.getName());
             if(customer.getName().search(expression) > -1) {
 				result.push(data[i].serialize());
 			}
@@ -39,8 +38,9 @@ module.exports = (function () {
 	var searchByWorker = function (id) {		
 		var result = [];
 		for (var i = 0; i < data.length; ++i) {
-			if (data[i].worker.id === parseInt(id)) {
-				result.push(data[i]);
+            var worker = data[i].getWorker();
+			if (worker.getId() === parseInt(id)) {
+				result.push(data[i].serialize());
 			}
 		}
 		return result;
@@ -49,8 +49,8 @@ module.exports = (function () {
 	var searchByDate = function (date) {
 		var result = [];
 		for(var i = 0; i < data.length; ++i) {
-			if(Date.parse(data[i].date) === Date.parse(date)) {
-				result.push(data[i]);
+			if(data[i].getDate() === Date.parse(date)) {
+				result.push(data[i].serialize());
 			}
 		}
 		return result;
@@ -79,18 +79,19 @@ module.exports = (function () {
 
     // TODO: this shoul be in view
     var serializeOutput = function (result) {
+        var res = [];
         for (var i = 0; i < result.length; ++i) {
-            result[i] = result[i].serialize();
+            res.push(result[i].serialize());
         }
-        return result
+        return res;
     };
 	
 	var getAll = function () {
 		return data;
 	};
         
-        var prepareRecord = function (params) {            
-            var result = {};            
+        var prepareRecord = function (params) {
+            var result = {};      
             result.id = data.length + 1; 
             result.date = getDate();
             var customer = getCustomerByName(params.customer_name);
@@ -98,18 +99,11 @@ module.exports = (function () {
             var apartment = getApartmentByNumber(params.appartment_number);
             var key = getKeyByParams(params.key_name, customer, apartment);
             result.worker = worker;
-            result.key = key;
+            result.key = key;            
             return result;
         };
         
         var validateParams = function (params) {
-            console.log("Validating params");
-            console.log(
-                    (params.customer_name && params.customer_name.match(/^(.*[a-zA-Z ])$/)) && 
-                    (params.appartment_number && params.appartment_number.match(/[0-9]/)) && 
-                    (params.worker_name && params.worker_name.match(/^(.*[a-zA-Z ])$/)) && 
-                    (params.key_name && params.key_name.match(/^(.*[a-zA-Z ])$/))
-                    );
             return (
                     (params.customer_name && params.customer_name.match(/^(.*[a-zA-Z ])$/)) && 
                     (params.appartment_number && params.appartment_number.match(/[0-9]/)) && 
@@ -133,17 +127,19 @@ module.exports = (function () {
         var getCustomerByName = function (name) {
             var result = null;
             for(var i = 0; i < data.length; ++i) {
-                if (data[i].key.customer.name === name) {
-                    result = data[i].key.customer;
+                var customer = data[i].getCustomer();
+                if (customer.getName() === name) {
+                    result = customer;
                 }
             }
             if (result) {
-                return result;
+                return result.serialize();
             }
             var maxCustomerId = 1;
             for(var i = 0; i < data.length; ++i) {
-                if (data[i].key.customer.id > maxCustomerId) {
-                    maxCustomerId = data[i].key.customer.id;
+                var customer = data[i].getCustomer();
+                if (customer.getId() > maxCustomerId) {
+                    maxCustomerId = customer.getId();
                 }
             }
             result = {
@@ -156,17 +152,20 @@ module.exports = (function () {
         var getWorkerByName = function (name) {
             var result = null;
             for(var i = 0; i < data.length; ++i) {
-                if (data[i].worker.name === name) {
-                    result = data[i].worker;
+                var worker = data[i].getWorker();
+                if (worker.getName() === name) {
+                    result = worker;
                 }
             }
             if (result) {
-                return result;
+                return result.serialize();
             }
+
             var maxWorkerId = 1;
             for(var i = 0; i < data.length; ++i) {
-                if (data[i].worker.id > maxWorkerId) {
-                    maxWorkerId = data[i].worker.id;
+                var worker = data[i].getWorker();
+                if (worker.getId() > maxWorkerId) {
+                    maxWorkerId = worker.getId();
                 }
             }
             result = {
@@ -179,33 +178,41 @@ module.exports = (function () {
         var getApartmentByNumber = function (number) {
             var result = null;
             for(var i = 0; i < data.length; ++i) {
-                if (data[i].key.apartment.number === parseInt(number)) {
-                    result = data[i].key.apartment;
+                var apartment = data[i].getAppartment();
+                if (apartment.getNumber() === parseInt(number)) {
+                    result = apartment;
                 }
             }
             if (result) {
-                return result;
+                return result.serialize();
             }
             var maxApartmentId = 1;
             for(var i = 0; i < data.length; ++i) {
-                if (data[i].key.apartment.id > maxApartmentId) {
-                    maxApartmentId = data[i].key.apartment.id;
+                var apartment = data[i].getAppartment();
+                if (apartment.getId() > maxApartmentId) {
+                    maxApartmentId = apartment.getId();
                 }
             }
-            result = {
+            return {
                 id: ++maxApartmentId,
                 number: number
             };
-          return result;
         };
         
         var getKeyByParams = function (name, customer, appartment) {
             var result = null;
             for(var i = 0; i < data.length; ++i) {
-                if (data[i].key.name === name && 
-                    data[i].key.customer.id === customer.id &&
-                    data[i].key.apartment.id === appartment.id) {
-                    result = data[i].key;
+                var recordAppartment = data[i].getAppartment();
+                var recordCustomer = data[i].getCustomer();
+                if (data[i].getKeyName() === name && 
+                    recordCustomer.getId() === customer.id &&
+                    recordAppartment.getId() === appartment.id) {
+                    result = {
+                        id: data[i].getKeyId(),
+                        name: data[i].getKeyName(),
+                        customer: customer,
+                        apartment: appartment
+                    };
                 }
             }
             if (result) {
@@ -213,8 +220,8 @@ module.exports = (function () {
             }
             var maxKeyId = 1;
             for(var i = 0; i < data.length; ++i) {
-                if (data[i].key.id > maxKeyId) {
-                    maxKeyId = data[i].key.id;
+                if (data[i].getKeyId() > maxKeyId) {
+                    maxKeyId = data[i].getKeyId();
                 }
             }
             result = {
@@ -226,16 +233,17 @@ module.exports = (function () {
           return result;
         };
         
-        var addRecord = function (record) {            
+        var addRecord = function (record) { 
             if (!validateParams(record)) {
                 logger.logError("Wrong params: " + JSON.stringify(record));
                 return null;
             }
-            data.push(prepareRecord(record));            
+            dataToSave = serializeOutput(data);
+            dataToSave.push(prepareRecord(record));
             try {
                 fs.writeFileSync(
                     dbFilePath, 
-                    JSON.stringify(data), 
+                    JSON.stringify(dataToSave), 
                     { flag: 'w+' }
                 );   
                 data = getDataFromFile(dbFilePath);
@@ -253,12 +261,12 @@ module.exports = (function () {
             var result = [];
             var appartments = [];
             for (var i = 0; i < data.length; ++i) {
-                appartments.push(data[i].key.apartment);
+                appartments.push(data[i].getAppartment());
             }
             for (var i = 0; i < appartments.length; ++i) {
                     var unique = true;
                     for (var j = 0; j < result.length; ++j) {
-                            if (appartments[i].id === result[j].id) {
+                            if (appartments[i].getId() === result[j].getId()) {
                                     unique = false;
                             }
                     }
@@ -266,16 +274,17 @@ module.exports = (function () {
                             result.push(appartments[i]);
                     }			
             }
-            return result;
+            return serializeOutput(result);
         };
         
         var getAppartmentsStat = function () {
             var result = {};
             for (var i = 0; i < data.length; ++i) {
-                if (!result[data[i].key.apartment.number]) {
-                    result[data[i].key.apartment.number] = 0;
+                var appartment = data[i].getAppartment();
+                if (!result[appartment.getNumber()]) {
+                    result[appartment.getNumber()] = 0;
                 }
-                ++result[data[i].key.apartment.number];
+                ++result[appartment.getNumber()];
             }
             return result;
         };
@@ -291,14 +300,3 @@ module.exports = (function () {
         getAppartmentsStat: getAppartmentsStat
 	};
 })();
-
-/*console.log(keysModule.searchByCustomer("customer 1"));
-console.log(keysModule.searchByDate("2015-10-12 14:44:14"));
-var session = keysModule.searchByDate("2015-10-12 14:44:14");
-console.log(new Date(session[0].date))
-var sessionDate = new Date(session[0].date);
-console.log("It way the " + (sessionDate.getDay() + 1) + " day of the week");
-console.log("UTC time: " + sessionDate.getUTCDate());
-console.log("Number of seconds from 01.01.1970: " + sessionDate.getTime());
-
-console.log( Math.round(((Date.now() - sessionDate.getTime()) / (3600 * 24))) + " days ago");*/

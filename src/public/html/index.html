@@ -30,9 +30,26 @@
                 <div>
                     <div class="button" onclick="window.KeysApp.addRecord()">Add record</div>
                 </div>
-            </form>
+            </form>                        
+            <div id="backbone-app"></div>
         </main>
+        <div id="template-demo"></div>
         @@include('./public_partial/footer.html')
         @@include('./public_partial/javascript.html')
+        <script type="text/template" id="test-template">
+            <div><%= test %></div>
+        </script>
+        <script type="text/javascript">
+                var t = _.template($('#test-template').html());
+                console.log(t);
+                console.log(t({test: 'hi, apple!'}) + t({test: 'hi, apple 1!'}) + t({test: 'hi, apple 2!'}));
+                $('#template-demo').html(t({test: 'hi, apple!'}) + t({test: 'hi, apple 1!'}) + t({test: 'hi, apple 2!'}));
+                var html = '';
+                _.times(1000, function (index) {
+                    html += t({test: 'time-' + index});
+                });
+                $('#template-demo').html(html);
+        </script>
+
     </body>
 </html>
