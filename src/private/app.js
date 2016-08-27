@@ -9,6 +9,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
+var id = 1;
+
 app.get('/workers', function (req, res) {
     res.send(keysModule.getAllWorkers());
 });
@@ -22,7 +24,23 @@ app.get('/chart', function (req, res) {
 });
 
 app.post('/record', function (req, res) {
-    res.send(appView.addRecord(req.body)) ;
+	console.log(req.query);
+	console.log(req.body);
+	var objId = id;
+	++id;
+	res.send({id: objId, test: 'test'});
+    //res.send(appView.addRecord(req.body)) ;
+});
+
+app.put('/record', function (req, res) {
+	console.log(req.query);
+	console.log(req.body);
+	res.send({id: req.body.id, test: 'test2'});
+    //res.send(appView.addRecord(req.body)) ;
+});
+
+app.get('/record', function (req, res) {
+    res.send({test: 'test'}) ;
 });
 
 app.post('/authenticate', function (req, res) {

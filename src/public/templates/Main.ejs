@@ -1,4 +1,16 @@
 <section>
 	<h3>Backbone app</h3>
-	<div><%= it.version %></div>
+	<style>
+	 	.my-style{
+	 		color: red
+	 	}
+	</style>
+	<div class="my-style"><%= it.version %></div>
+
+	<div>
+		<% if (it.obj.id) { %> <%= it.obj.id %> <% } %>
+		<div><%= it.obj.get('test') %></div>
+	</div>
+
+	<button id="save-button">Save obj</button>
 </section>
