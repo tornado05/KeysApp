@@ -1,0 +1,42 @@
+@import "./_variables.less";
+
+body{
+	background: @main-bg-color;
+	color: @main-color;
+    label{
+        display: block;
+    }
+
+    input[type="submit"]{
+        display: block;
+    }
+
+    #message{
+        background: @message-bg-color;
+        padding: 20px 40px;
+        text-align: center;
+    }
+
+    .button{
+        background: @button-bg-color;
+        display: inline-block;
+        padding: 5px 30px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        cursor: pointer;
+    }
+
+    .button:hover{
+        background: @button-hover-bg-color;
+    }
+
+    .button:active{
+        background: @button-active-bg-color;
+    }
+
+    #search-output{
+        padding-bottom:10px;
+    }
+
+    @import "./_footer.less";
+}

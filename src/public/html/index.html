@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    @@include('./public_partial/head.html')
+    <body>
+        @@include('./public_partial/header.html')
+        <main>
+            <h1>Keys</h1>
+            <form method="GET" action="search">
+                <label>Select worker</label>
+                <select name="worker_id">
+                </select>
+                <label>Enter customer name</label>
+                <input type="text" name="customer_name"/>
+                <div>
+                    <div class="button" onclick="window.KeysApp.searchRecord()">Search</div>
+                </div>
+            </form>
+            <div id="search-output"></div>
+            <canvas id="appartment-chart" width="600" height="400"></canvas>
+            <form method="POST" action="record">
+                <div id="post-record-message"></div>
+                <label>Enter customer name</label>
+                <input type="text" name="customer_name"/>
+                <label>Enter worker name</label>
+                <input type="text" name="worker_name"/>
+                <label>Enter appartment number</label>
+                <input type="text" name="appartment_number"/>
+                <label>Enter key name</label>
+                <input type="text" name="key_name"/>
+                <div>
+                    <div class="button" onclick="window.KeysApp.addRecord()">Add record</div>
+                </div>
+            </form>                        
+            <div id="backbone-app"></div>
+        </main>
+        <div id="template-demo"></div>
+        @@include('./public_partial/footer.html')
+        @@include('./public_partial/javascript.html')
+        <script type="text/template" id="test-template">
+            <div><%= test %></div>
+        </script>
+        <script type="text/javascript">
+        // $(function () {
+        //     var t = _.template($('#test-template').html());
+        //     console.log(t);
+        //     console.log(t({test: 'hi, apple!'}) + t({test: 'hi, apple 1!'}) + t({test: 'hi, apple 2!'}));
+        //     $('#template-demo').html(t({test: 'hi, apple!'}) + t({test: 'hi, apple 1!'}) + t({test: 'hi, apple 2!'}));
+        //     var html = '';
+        //     _.times(1000, function (index) {
+        //         html += t({test: 'time-' + index});
+        //     });
+        //     $('#template-demo').html(html);
+        // });                
+        </script>
+
+    </body>
+</html>
